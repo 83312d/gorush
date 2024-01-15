@@ -132,6 +132,8 @@ func appStatusHandler(q *queue.Queue) gin.HandlerFunc {
 		result.Android.PushError = status.StatStorage.GetAndroidError()
 		result.Huawei.PushSuccess = status.StatStorage.GetHuaweiSuccess()
 		result.Huawei.PushError = status.StatStorage.GetHuaweiError()
+		result.Rustore.PushSuccess = status.StatStorage.GetRustoreSuccess()
+		result.Rustore.PushError = status.StatStorage.GetRustoreError()
 
 		c.JSON(http.StatusOK, result)
 	}

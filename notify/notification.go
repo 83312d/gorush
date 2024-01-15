@@ -117,6 +117,11 @@ type PushNotification struct {
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
 
+	// Rustore
+	ProjectID    string `json:"project_id,omitempty"`
+	ServiceToken string `json:"service_token,omitempty"`
+	Color        string `json:"color,omitempty"`
+
 	// ref: https://github.com/sideshow/apns2/blob/54928d6193dfe300b6b88dad72b7e2ae138d4f0a/payload/builder.go#L7-L24
 	InterruptionLevel string `json:"interruption_level,omitempty"`
 }
@@ -199,8 +204,8 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf(cfg *config.ConfYaml) error {
-	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
-		return errors.New("please enable iOS, Android or Huawei config in yml config")
+	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled && !cfg.Rustore.Enabled {
+		return errors.New("please enable iOS, Android, Rustore or Huawei config in yml config")
 	}
 
 	if cfg.Ios.Enabled {
@@ -232,6 +237,16 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 		}
 	}
 
+	if cfg.Rustore.Enabled {
+		if cfg.Rustore.ProjectID == "" {
+			return errors.New("missing rustore project_id")
+		}
+
+		if cfg.Rustore.ServiceToken == "" {
+			return errors.New("missing rustore service token")
+		}
+	}
+
 	return nil
 }
 
@@ -251,6 +266,8 @@ func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 		resp, err = PushToAndroid(v, cfg)
 	case core.PlatFormHuawei:
 		resp, err = PushToHuawei(v, cfg)
+	case core.PlatFormRustore:
+		resp, err = PushToRustore(v, cfg)
 	}
 
 	if cfg.Core.FeedbackURL != "" {

@@ -126,6 +126,7 @@ type ConfYaml struct {
 	Huawei  SectionHuawei  `yaml:"huawei"`
 	Ios     SectionIos     `yaml:"ios"`
 	Queue   SectionQueue   `yaml:"queue"`
+	Rustore SectionRustore `yaml:"rustore"`
 	Log     SectionLog     `yaml:"log"`
 	Stat    SectionStat    `yaml:"stat"`
 	GRPC    SectionGRPC    `yaml:"grpc"`
@@ -177,6 +178,14 @@ type SectionAndroid struct {
 	Enabled  bool   `yaml:"enabled"`
 	APIKey   string `yaml:"apikey"`
 	MaxRetry int    `yaml:"max_retry"`
+}
+
+type SectionRustore struct {
+	Enabled             bool   `yaml:"enabled"`
+	ProjectID           string `yaml:"project_id"`
+	ServiceToken        string `yaml:"service_token"`
+	MaxRetry            int    `yaml:"max_retry"`
+	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
 }
 
 // SectionHuawei is sub section of config.
@@ -391,6 +400,13 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")
+
+	// Rustore
+	conf.Rustore.Enabled = viper.GetBool("rustore.enabled")
+	conf.Rustore.ProjectID = viper.GetString("rustore.project_id")
+	conf.Rustore.ServiceToken = viper.GetString("rustore.service_token")
+	conf.Rustore.MaxConcurrentPushes = viper.GetUint("rustore.max_concurrent_pushes")
+	conf.Rustore.MaxRetry = viper.GetInt("rustore.max_retry")
 
 	// log
 	conf.Log.Format = viper.GetString("log.format")

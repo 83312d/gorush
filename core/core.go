@@ -7,6 +7,8 @@ const (
 	PlatFormAndroid
 	// PlatFormHuawei constant is 3 for Huawei
 	PlatFormHuawei
+	// PlatFormRustore is 4 for Rustore
+	PlatFormRustore
 )
 
 const (

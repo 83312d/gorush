@@ -21,6 +21,12 @@ const (
 
 	// HuaweiErrorKey is key name for huawei error count of storage
 	HuaweiErrorKey = "gorush-huawei-error-count"
+
+	// RustoreSuccessKey is key name for rustore success count of storage
+	RustoreSuccessKey = "gorush-rustore-success-count"
+
+	// RustoreErrorKey is key name for rustore error count of storage
+	RustoreErrorKey = "gorush-rustore-error-count"
 )
 
 // Storage interface
