@@ -49,6 +49,8 @@ rustore:
   service_token: "YOUR_SERVICE_TOKEN"
   max_concurrent_pushes: 100 # max concurrent rustore pushes
   max_retry: 0 # resend fail notification, default value zero is disabled
+  # "%s" is a placeholder for project_id, see notify/notification_rustore#InitRustoreClient
+  message_send_url: "https://vkpns.rustore.ru/v1/projects/%s/messages:send"
 
 huawei:
   enabled: false

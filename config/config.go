@@ -186,6 +186,7 @@ type SectionRustore struct {
 	ServiceToken        string `yaml:"service_token"`
 	MaxRetry            int    `yaml:"max_retry"`
 	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
+	MessageSendUrl      string `yaml:"message_send_url"`
 }
 
 // SectionHuawei is sub section of config.
@@ -407,6 +408,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Rustore.ServiceToken = viper.GetString("rustore.service_token")
 	conf.Rustore.MaxConcurrentPushes = viper.GetUint("rustore.max_concurrent_pushes")
 	conf.Rustore.MaxRetry = viper.GetInt("rustore.max_retry")
+	conf.Rustore.MessageSendUrl = viper.GetString("rustore.message_send_url")
 
 	// log
 	conf.Log.Format = viper.GetString("log.format")

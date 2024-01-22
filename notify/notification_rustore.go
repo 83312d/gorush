@@ -79,7 +79,11 @@ func InitRustoreClient(cfg *config.ConfYaml, serviceToken string, projectId stri
 	} else {
 		pId = cfg.Rustore.ProjectID
 	}
-	url := fmt.Sprintf("https://vkpns.rustore.ru/v1/projects/%s/messages:send", pId)
+
+	if cfg.Rustore.MessageSendUrl == "" {
+		return nil, errors.New("missing rustore message send url")
+	}
+	url := fmt.Sprintf(cfg.Rustore.MessageSendUrl, pId)
 
 	if serviceToken != "" && serviceToken != cfg.Rustore.ServiceToken {
 		return newClient(url, serviceToken), nil
