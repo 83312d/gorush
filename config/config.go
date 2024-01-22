@@ -10,7 +10,7 @@ import (
 	"github.com/spf13/viper"
 )
 
-//nolint
+// nolint
 var defaultConf = []byte(`
 core:
   enabled: true # enable httpd server
@@ -199,16 +199,17 @@ type SectionHuawei struct {
 
 // SectionIos is sub section of config.
 type SectionIos struct {
-	Enabled             bool   `yaml:"enabled"`
-	KeyPath             string `yaml:"key_path"`
-	KeyBase64           string `yaml:"key_base64"`
-	KeyType             string `yaml:"key_type"`
-	Password            string `yaml:"password"`
-	Production          bool   `yaml:"production"`
-	MaxConcurrentPushes uint   `yaml:"max_concurrent_pushes"`
-	MaxRetry            int    `yaml:"max_retry"`
-	KeyID               string `yaml:"key_id"`
-	TeamID              string `yaml:"team_id"`
+	Enabled             bool              `yaml:"enabled"`
+	KeyPath             string            `yaml:"key_path"`
+	KeyBase64           string            `yaml:"key_base64"`
+	KeyType             string            `yaml:"key_type"`
+	Password            string            `yaml:"password"`
+	Production          bool              `yaml:"production"`
+	MaxConcurrentPushes uint              `yaml:"max_concurrent_pushes"`
+	MaxRetry            int               `yaml:"max_retry"`
+	KeyID               string            `yaml:"key_id"`
+	TeamID              string            `yaml:"team_id"`
+	Certs               map[string]string `yaml:"certs"`
 }
 
 // SectionLog is sub section of config.
@@ -401,6 +402,7 @@ func LoadConf(confPath ...string) (*ConfYaml, error) {
 	conf.Ios.MaxRetry = viper.GetInt("ios.max_retry")
 	conf.Ios.KeyID = viper.GetString("ios.key_id")
 	conf.Ios.TeamID = viper.GetString("ios.team_id")
+	conf.Ios.Certs = viper.GetStringMapString("ios.certs")
 
 	// Rustore
 	conf.Rustore.Enabled = viper.GetBool("rustore.enabled")

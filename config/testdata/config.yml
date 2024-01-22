@@ -76,6 +76,9 @@ queue:
 
 ios:
   enabled: false
+  certs: # ios certificates as KV. Can be as many as you need.
+    "certificate/some_app.pem": "password1" # certificate_path: certificate_password
+    "certificate/other_app.p12": "password2" # certificate must be named as your app name
   key_path: "key.pem"
   key_base64: "" # load iOS key from base64 input
   key_type: "pem" # could be pem, p12 or p8 type

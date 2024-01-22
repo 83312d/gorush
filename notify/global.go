@@ -9,6 +9,8 @@ import (
 var (
 	// ApnsClient is apns client
 	ApnsClient *apns2.Client
+	// APNSClients map
+	ApnsClients map[string]*apns2.Client
 	// FCMClient is apns client
 	FCMClient *fcm.Client
 	// HMSClient is Huawei push client

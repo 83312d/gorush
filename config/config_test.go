@@ -101,6 +101,12 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
+	assert.Equal(suite.T(), map[string]string{"certificate/some_app.pem": "password1", "certificate/other_app.p12": "password2"}, suite.ConfGorushDefault.Ios.Certs)
+
+	// Huawei
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Huawei.Enabled)
+	assert.Equal(suite.T(), "YOUR_APP_ID", suite.ConfGorushDefault.Huawei.AppID)
+	assert.Equal(suite.T(), "YOUR_APP_SECRET", suite.ConfGorushDefault.Huawei.AppSecret)
 
 	// queue
 	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)

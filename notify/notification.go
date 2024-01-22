@@ -116,6 +116,7 @@ type PushNotification struct {
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
+	Application string   `json:"application,omitempty"`
 
 	// Rustore
 	ProjectID    string `json:"project_id,omitempty"`
@@ -209,12 +210,29 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 	}
 
 	if cfg.Ios.Enabled {
-		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
+		// check certificate key pr cetrificate kv struct present
+		noEmptyCerts := len(cfg.Ios.Certs) == 0
+		for k := range cfg.Ios.Certs {
+			if k == "" {
+				noEmptyCerts = false
+				break
+			}
+		}
+		keySetted := cfg.Ios.KeyPath != "" && cfg.Ios.KeyBase64 != ""
+		if !keySetted || !noEmptyCerts {
 			return errors.New("missing iOS certificate key")
 		}
 
 		// check certificate file exist
-		if cfg.Ios.KeyPath != "" {
+		if cfg.Ios.KeyPath != "" || len(cfg.Ios.Certs) > 0 {
+			if len(cfg.Ios.Certs) > 0 {
+				for k := range cfg.Ios.Certs {
+					if _, err := os.Stat(k); os.IsNotExist(err) {
+						return errors.New("certificate file does not exist")
+					}
+				}
+			}
+
 			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
 				return errors.New("certificate file does not exist")
 			}
