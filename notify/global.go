@@ -9,10 +9,16 @@ import (
 var (
 	// ApnsClient is apns client
 	ApnsClient *apns2.Client
+	// APNSClients map
+	ApnsClients map[string]*apns2.Client
 	// FCMClient is apns client
 	FCMClient *fcm.Client
 	// HMSClient is Huawei push client
 	HMSClient *core.HMSClient
+	// RustoreClient is obviously is rustore push client
+	RSClient *RustoreClient
+	// MaxConcurrentRustorePushes pool to limit num of concurrent Rustore pushes
+	MaxConcurrentRustorePushes chan struct{}
 	// MaxConcurrentIOSPushes pool to limit the number of concurrent iOS pushes
 	MaxConcurrentIOSPushes chan struct{}
 )

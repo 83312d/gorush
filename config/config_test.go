@@ -85,6 +85,11 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), "YOUR_API_KEY", suite.ConfGorushDefault.Android.APIKey)
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Android.MaxRetry)
 
+	// Rustore
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Rustore.Enabled)
+	assert.Equal(suite.T(), "YOUR_API_KEY", suite.ConfGorushDefault.Rustore.ServiceToken)
+	assert.Equal(suite.T(), "YOUR_PROJECT_ID", suite.ConfGorushDefault.Rustore.ProjectID)
+
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Ios.Enabled)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyPath)
@@ -96,6 +101,12 @@ func (suite *ConfigTestSuite) TestValidateConfDefault() {
 	assert.Equal(suite.T(), 0, suite.ConfGorushDefault.Ios.MaxRetry)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.KeyID)
 	assert.Equal(suite.T(), "", suite.ConfGorushDefault.Ios.TeamID)
+	assert.Equal(suite.T(), map[string]string{"certificate/some_app.pem": "password1", "certificate/other_app.p12": "password2"}, suite.ConfGorushDefault.Ios.Certs)
+
+	// Huawei
+	assert.Equal(suite.T(), false, suite.ConfGorushDefault.Huawei.Enabled)
+	assert.Equal(suite.T(), "YOUR_APP_ID", suite.ConfGorushDefault.Huawei.AppID)
+	assert.Equal(suite.T(), "YOUR_APP_SECRET", suite.ConfGorushDefault.Huawei.AppSecret)
 
 	// queue
 	assert.Equal(suite.T(), "local", suite.ConfGorushDefault.Queue.Engine)
@@ -178,6 +189,11 @@ func (suite *ConfigTestSuite) TestValidateConf() {
 	assert.Equal(suite.T(), true, suite.ConfGorush.Android.Enabled)
 	assert.Equal(suite.T(), "YOUR_API_KEY", suite.ConfGorush.Android.APIKey)
 	assert.Equal(suite.T(), 0, suite.ConfGorush.Android.MaxRetry)
+
+	// Rustore
+	assert.Equal(suite.T(), true, suite.ConfGorushDefault.Rustore.Enabled)
+	assert.Equal(suite.T(), "YOUR_API_KEY", suite.ConfGorushDefault.Rustore.ServiceToken)
+	assert.Equal(suite.T(), "YOUR_PROJECT_ID", suite.ConfGorushDefault.Rustore.ProjectID)
 
 	// iOS
 	assert.Equal(suite.T(), false, suite.ConfGorush.Ios.Enabled)

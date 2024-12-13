@@ -31,6 +31,8 @@ func (s *StateStorage) Reset() {
 	s.store.Set(core.AndroidErrorKey, 0)
 	s.store.Set(core.HuaweiSuccessKey, 0)
 	s.store.Set(core.HuaweiErrorKey, 0)
+	s.store.Set(core.RustoreSuccessKey, 0)
+	s.store.Set(core.RustoreErrorKey, 0)
 }
 
 // AddTotalCount record push notification count.
@@ -68,6 +70,16 @@ func (s *StateStorage) AddHuaweiError(count int64) {
 	s.store.Add(core.HuaweiErrorKey, count)
 }
 
+// AddRustoreSuccess record counts of success Rustore push notification.
+func (s *StateStorage) AddRustoreSuccess(count int64) {
+	s.store.Add(core.RustoreSuccessKey, count)
+}
+
+// AddRustoreError record counts of error Rustore push notification.
+func (s *StateStorage) AddRustoreError(count int64) {
+	s.store.Add(core.RustoreErrorKey, count)
+}
+
 // GetTotalCount show counts of all notification.
 func (s *StateStorage) GetTotalCount() int64 {
 	return s.store.Get(core.TotalCountKey)
@@ -101,4 +113,14 @@ func (s *StateStorage) GetHuaweiSuccess() int64 {
 // GetHuaweiError show error counts of Huawei notification.
 func (s *StateStorage) GetHuaweiError() int64 {
 	return s.store.Get(core.HuaweiErrorKey)
+}
+
+// GetRustoreSuccess show success counts of Rustore notification.
+func (s *StateStorage) GetRustoreSuccess() int64 {
+	return s.store.Get(core.RustoreSuccessKey)
+}
+
+// GetRustoreError show error counts of Rustore notification.
+func (s *StateStorage) GetRustoreError() int64 {
+	return s.store.Get(core.RustoreErrorKey)
 }

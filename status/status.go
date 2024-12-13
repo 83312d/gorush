@@ -33,6 +33,7 @@ type App struct {
 	Ios            IosStatus     `json:"ios"`
 	Android        AndroidStatus `json:"android"`
 	Huawei         HuaweiStatus  `json:"huawei"`
+	Rustore        RustoreStatus `json:"rustore"`
 }
 
 // AndroidStatus is android structure
@@ -49,6 +50,11 @@ type IosStatus struct {
 
 // HuaweiStatus is huawei structure
 type HuaweiStatus struct {
+	PushSuccess int64 `json:"push_success"`
+	PushError   int64 `json:"push_error"`
+}
+
+type RustoreStatus struct {
 	PushSuccess int64 `json:"push_success"`
 	PushError   int64 `json:"push_error"`
 }

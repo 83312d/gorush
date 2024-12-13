@@ -129,6 +129,37 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 			ApnsClient, err = newApnsClient(cfg, certificateKey)
 		}
 
+		if len(cfg.Ios.Certs) > 0 {
+			ApnsClients = make(map[string]*apns2.Client)
+
+			for k, v := range cfg.Ios.Certs {
+				ext = filepath.Ext(k)
+
+				switch ext {
+				case dotP12:
+					certificateKey, err = certificate.FromP12File(k, v)
+				case dotPEM:
+					certificateKey, err = certificate.FromPemFile(k, v)
+				default:
+					err = errors.New("wrong certificate key extension")
+				}
+				if err != nil {
+					logx.LogError.Error("Cert Error:", err.Error())
+
+					return err
+				}
+				certName := getCertFileName(k)
+				ApnsClients[certName], err = newApnsClient(cfg, certificateKey)
+				if err != nil {
+					logx.LogError.Error("Transport Error:", err.Error())
+					return err
+				}
+				if h2Transport, ok := ApnsClients[certName].HTTPClient.Transport.(*http2.Transport); ok {
+					configureHTTP2ConnHealthCheck(h2Transport)
+				}
+			}
+		}
+
 		if h2Transport, ok := ApnsClient.HTTPClient.Transport.(*http2.Transport); ok {
 			configureHTTP2ConnHealthCheck(h2Transport)
 		}
@@ -145,6 +176,10 @@ func InitAPNSClient(cfg *config.ConfYaml) error {
 	}
 
 	return nil
+}
+
+func getCertFileName(path string) string {
+	return filepath.Base(path[:len(path)-len(filepath.Ext(path))])
 }
 
 func newApnsClient(cfg *config.ConfYaml, certificate tls.Certificate) (*apns2.Client, error) {
@@ -384,20 +419,36 @@ func GetIOSNotification(req *PushNotification) *apns2.Notification {
 }
 
 func getApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
+	var cl *apns2.Client
+
+	if ApnsClients != nil {
+		cl = chooseApnsClient(cfg, req)
+	}
+	if cl == nil {
+		cl = ApnsClient
+	}
+
 	switch {
 	case req.Production:
-		client = ApnsClient.Production()
+		client = cl.Production()
 	case req.Development:
-		client = ApnsClient.Development()
+		client = cl.Development()
 	default:
 		if cfg.Ios.Production {
-			client = ApnsClient.Production()
+			client = cl.Production()
 		} else {
-			client = ApnsClient.Development()
+			client = cl.Development()
 		}
 	}
 
 	return
+}
+
+func chooseApnsClient(cfg *config.ConfYaml, req *PushNotification) (client *apns2.Client) {
+	client, exists := ApnsClients[req.Application]; if !exists {
+		return nil
+	}
+	return client
 }
 
 // PushToIOS provide send notification to APNs server.

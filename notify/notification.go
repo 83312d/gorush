@@ -116,6 +116,12 @@ type PushNotification struct {
 	SoundName   string   `json:"name,omitempty"`
 	SoundVolume float32  `json:"volume,omitempty"`
 	Apns        D        `json:"apns,omitempty"`
+	Application string   `json:"application,omitempty"`
+
+	// Rustore
+	ProjectID    string `json:"project_id,omitempty"`
+	ServiceToken string `json:"service_token,omitempty"`
+	Color        string `json:"color,omitempty"`
 
 	// ref: https://github.com/sideshow/apns2/blob/54928d6193dfe300b6b88dad72b7e2ae138d4f0a/payload/builder.go#L7-L24
 	InterruptionLevel string `json:"interruption_level,omitempty"`
@@ -199,17 +205,34 @@ func SetProxy(proxy string) error {
 
 // CheckPushConf provide check your yml config.
 func CheckPushConf(cfg *config.ConfYaml) error {
-	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled {
-		return errors.New("please enable iOS, Android or Huawei config in yml config")
+	if !cfg.Ios.Enabled && !cfg.Android.Enabled && !cfg.Huawei.Enabled && !cfg.Rustore.Enabled {
+		return errors.New("please enable iOS, Android, Rustore or Huawei config in yml config")
 	}
 
 	if cfg.Ios.Enabled {
-		if cfg.Ios.KeyPath == "" && cfg.Ios.KeyBase64 == "" {
+		// check certificate key pr cetrificate kv struct present
+		noEmptyCerts := len(cfg.Ios.Certs) == 0
+		for k := range cfg.Ios.Certs {
+			if k == "" {
+				noEmptyCerts = false
+				break
+			}
+		}
+		keySetted := cfg.Ios.KeyPath != "" && cfg.Ios.KeyBase64 != ""
+		if !keySetted || !noEmptyCerts {
 			return errors.New("missing iOS certificate key")
 		}
 
 		// check certificate file exist
-		if cfg.Ios.KeyPath != "" {
+		if cfg.Ios.KeyPath != "" || len(cfg.Ios.Certs) > 0 {
+			if len(cfg.Ios.Certs) > 0 {
+				for k := range cfg.Ios.Certs {
+					if _, err := os.Stat(k); os.IsNotExist(err) {
+						return errors.New("certificate file does not exist")
+					}
+				}
+			}
+
 			if _, err := os.Stat(cfg.Ios.KeyPath); os.IsNotExist(err) {
 				return errors.New("certificate file does not exist")
 			}
@@ -232,6 +255,16 @@ func CheckPushConf(cfg *config.ConfYaml) error {
 		}
 	}
 
+	if cfg.Rustore.Enabled {
+		if cfg.Rustore.ProjectID == "" {
+			return errors.New("missing rustore project_id")
+		}
+
+		if cfg.Rustore.ServiceToken == "" {
+			return errors.New("missing rustore service token")
+		}
+	}
+
 	return nil
 }
 
@@ -251,6 +284,8 @@ func SendNotification(req qcore.QueuedMessage, cfg *config.ConfYaml) (resp *Resp
 		resp, err = PushToAndroid(v, cfg)
 	case core.PlatFormHuawei:
 		resp, err = PushToHuawei(v, cfg)
+	case core.PlatFormRustore:
+		resp, err = PushToRustore(v, cfg)
 	}
 
 	if cfg.Core.FeedbackURL != "" {

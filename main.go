@@ -102,6 +102,9 @@ func main() {
 	// Initialize push slots for concurrent iOS pushes
 	notify.MaxConcurrentIOSPushes = make(chan struct{}, cfg.Ios.MaxConcurrentPushes)
 
+	// Init push slots for cincurrent Rustore pushes
+	notify.MaxConcurrentRustorePushes = make(chan struct{}, cfg.Rustore.MaxConcurrentPushes)
+
 	if opts.Ios.KeyPath != "" {
 		cfg.Ios.KeyPath = opts.Ios.KeyPath
 	}
@@ -203,6 +206,38 @@ func main() {
 		}
 
 		if _, err := notify.PushToAndroid(req, cfg); err != nil {
+			return
+		}
+
+		return
+	}
+
+	// send rustore notification
+	if opts.Rustore.Enabled {
+		cfg.Rustore.Enabled = opts.Rustore.Enabled
+		req := &notify.PushNotification{
+			Platform: core.PlatFormRustore,
+			Message:  message,
+			Title:    title,
+		}
+		if token != "" {
+			req.Tokens = []string{token}
+		}
+
+		if topic != "" {
+			req.To = topic
+		}
+
+		err := notify.CheckMessage(req)
+		if err != nil {
+			logx.LogError.Fatal(err)
+		}
+
+		if err := status.InitAppStatus(cfg); err != nil {
+			return
+		}
+
+		if _, err := notify.PushToRustore(req, cfg); err != nil {
 			return
 		}
 
@@ -379,6 +414,12 @@ func main() {
 
 	if cfg.Huawei.Enabled {
 		if _, err = notify.InitHMSClient(cfg, cfg.Huawei.AppSecret, cfg.Huawei.AppID); err != nil {
+			logx.LogError.Fatal(err)
+		}
+	}
+
+	if cfg.Rustore.Enabled {
+		if _, err = notify.InitRustoreClient(cfg, cfg.Rustore.ServiceToken, cfg.Rustore.ProjectID); err != nil {
 			logx.LogError.Fatal(err)
 		}
 	}
